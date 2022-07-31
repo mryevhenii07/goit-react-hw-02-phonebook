@@ -1,61 +1,69 @@
 import React from "react";
 import "./App.css";
-import shortid from "shortid";
-
-// import { nanoid } from "nanoid";
-import ContactList from "./components/ContactList/ContactList";
-// import { ContactForm } from "./components/ContactForm/ContactForm";
-import { Filter } from "./components/Filter/Filter";
-import listJ from "./list.json";
-import s from "./components/Filter/Filte.module.css";
-import Form from "./components/ContactForm/ContactForm";
 import { nanoid } from "nanoid";
+
+import Filter from "./components/Filter/Filter";
+import Form from "./components/Form/Form";
+
 class App extends React.Component {
   state = {
-    contacts: listJ,
+    contacts: [
+      { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
+      { id: "id-2", name: "Hermione Kline", number: "443-89-12" },
+      { id: "id-3", name: "Eden Clements", number: "645-17-79" },
+      { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
+    ],
     filter: "",
   };
-  listId = nanoid();
 
-  addList = (number) => {
-    console.log(number);
-    const list = {
-      id: this.nameId,
-      number: number.number,
-      name: number.name,
-    };
-    this.setState((prevState) => ({
-      contacts: [list, ...prevState.contacts],
-    }));
-  };
-  onDeleteList = (deleteId) => {
-    this.setState((prevState) => ({
-      contacts: prevState.contacts.filter((item) => item.id !== deleteId),
-    }));
+  onSubmit = (name) => {
+    this.setState((prevState) => ({ contacts: [name, ...prevState.contacts] }));
   };
 
-  changeFilter = (e) => {
-    this.setState({ filter: e.currentTarget.value });
+  onSearchFilter = (e) => {
+    this.setState({ filter: e.target.value });
   };
-  nameId = shortid.generate();
+  onIncludes = () => {
+    const normalizeFilter = this.state.filter.toLowerCase();
+
+    return this.state.contacts.filter((todo) => {
+      return todo.name.toLowerCase().includes(normalizeFilter);
+    });
+  };
+
+  deleteTodo = (todoId) => {
+    this.setState((prevState) => ({
+      contacts: prevState.contacts.filter((todo) => todo.id !== todoId),
+    }));
+  };
+
   render() {
     const { contacts, filter } = this.state;
-    const totalContacts = contacts.length;
-    const visibleFilter = this.state.filter.toLowerCase();
-    const visibleList = this.state.contacts.filter((lis) =>
-      lis.name.toLowerCase().includes(visibleFilter)
-    );
-    return (
-      <div className="App">
-        <h2>Phonebook</h2>
-        <Form onSubmit={this.addList} />
-        <h2>Contacts</h2>
-        <span className={s.filterSubTitle}>
-          FInd contacts by name: {totalContacts}
-        </span>
-        <Filter value={filter} changeFilter={this.changeFilter} />
 
-        <ContactList contacts={visibleList} onDeleteList={this.onDeleteList} />
+    const filterTodos = this.onIncludes();
+
+    return (
+      <div>
+        <h1>Phonebook</h1>
+        <Form onSubmit={this.onSubmit} />
+        <h2>Contacts</h2>
+
+        <Filter onSearchFilter={this.onSearchFilter} filter={filter} />
+
+        <ul>
+          {filterTodos.map((contact) => {
+            return (
+              <li className="list" key={contact.id}>
+                <div>
+                  {contact.name}: {contact.telValue}
+                </div>
+                <button onClick={() => this.deleteTodo(contact.id)}>
+                  DELETE
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     );
   }
