@@ -1,25 +1,32 @@
-import React from "react";
+import React, { PureComponent } from "react";
 
-class Form extends React.Component {
+class Form extends PureComponent {
   state = { name: "", telValue: "" };
 
-  onChangeName = (e) => {
-    this.setState({ name: e.target.value });
-  };
+  onInputChange = (e) => {
+    switch (e.currentTarget.name) {
+      case "name":
+        this.setState({ name: e.target.value });
+        break;
 
-  onChangeTel = (e) => {
-    this.setState({ telValue: e.target.value });
+      case "number":
+        this.setState({ telValue: e.target.value });
+        break;
+
+      default:
+    }
   };
 
   onFormSubmit = (e) => {
     e.preventDefault();
     this.props.onSubmit(this.state);
 
-    this.setState({ name: "" });
-    this.setState({ telValue: "" });
+    this.setState({ name: "", telValue: "" });
+    // this.setState({ telValue: '' });
   };
 
   render() {
+    const { telValue, name } = this.state;
     return (
       <form onSubmit={this.onFormSubmit}>
         <input
@@ -28,8 +35,8 @@ class Form extends React.Component {
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
-          value={this.state.name}
-          onChange={this.onChangeName}
+          value={name}
+          onChange={this.onInputChange}
         />
         <input
           type="tel"
@@ -37,8 +44,8 @@ class Form extends React.Component {
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
-          value={this.state.telValue}
-          onChange={this.onChangeTel}
+          value={telValue}
+          onChange={this.onInputChange}
         />
 
         <button type="submit">Add contact</button>

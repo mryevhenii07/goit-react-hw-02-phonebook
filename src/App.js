@@ -1,23 +1,23 @@
-import React from "react";
+import React, { PureComponent } from "react";
 import "./App.css";
 import { nanoid } from "nanoid";
 
 import Filter from "./components/Filter/Filter";
 import Form from "./components/Form/Form";
 
-class App extends React.Component {
+class App extends PureComponent {
   state = {
-    contacts: [
-      { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
-      { id: "id-2", name: "Hermione Kline", number: "443-89-12" },
-      { id: "id-3", name: "Eden Clements", number: "645-17-79" },
-      { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
-    ],
+    contacts: [],
     filter: "",
   };
 
   onSubmit = (name) => {
-    this.setState((prevState) => ({ contacts: [name, ...prevState.contacts] }));
+    this.setState((prevState) => ({
+      contacts: [
+        { ...name, id: `id-${prevState.contacts.length + 1}` },
+        ...prevState.contacts,
+      ],
+    }));
   };
 
   onSearchFilter = (e) => {
@@ -25,10 +25,14 @@ class App extends React.Component {
   };
   onIncludes = () => {
     const normalizeFilter = this.state.filter.toLowerCase();
-
-    return this.state.contacts.filter((todo) => {
+    const filterContacts = this.state.contacts.filter((todo) => {
       return todo.name.toLowerCase().includes(normalizeFilter);
     });
+
+    if (filterContacts.length === 0) {
+      alert("kuku");
+    }
+    return filterContacts;
   };
 
   deleteTodo = (todoId) => {
@@ -38,7 +42,7 @@ class App extends React.Component {
   };
 
   render() {
-    const { contacts, filter } = this.state;
+    const { filter } = this.state;
 
     const filterTodos = this.onIncludes();
 
